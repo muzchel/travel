@@ -1,0 +1,10 @@
+<resources>
+
+    <!-- Тема для светлого режима -->
+    <style name="Theme.Light" parent="Theme.AppCompat.Light.DarkActionBar">
+
+
+    </style>
+
+
+</resources>
