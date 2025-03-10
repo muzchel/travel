@@ -14,14 +14,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Light"
         tools:targetApi="31">
-        <activity android:name=".LoginActivity"
+        <activity android:name=".user.LoginActivity"
             android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".user.RegisterActivity" />
         <activity android:name=".admin.AdminActivity" />
         <activity android:name=".AddEditTourActivity" />
         <activity android:name=".admin.ToursActivity"

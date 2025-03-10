@@ -1,4 +1,4 @@
-package com.example.travel;
+package com.example.travel.user;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.Switch;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+
+import com.example.travel.NotificationWorker;
+import com.example.travel.R;
+
 import java.util.concurrent.TimeUnit;
 
 public class SettingsFragment extends Fragment {

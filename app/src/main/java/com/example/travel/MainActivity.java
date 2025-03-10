@@ -1,13 +1,16 @@
 package com.example.travel;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.example.travel.user.HomeFragment;
+import com.example.travel.user.ProfileFragment;
+import com.example.travel.user.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 

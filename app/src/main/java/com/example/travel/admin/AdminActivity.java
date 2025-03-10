@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.travel.LoginActivity;
+import com.example.travel.user.LoginActivity;
 import com.example.travel.R;
 
 public class AdminActivity extends AppCompatActivity {
