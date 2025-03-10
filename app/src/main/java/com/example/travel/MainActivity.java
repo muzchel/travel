@@ -1,7 +1,6 @@
 package com.example.travel;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -25,12 +24,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Загружаем главный фрагмент при старте
         if (savedInstanceState == null) {
-            replaceFragment(new HomeFragment());
+            replaceFragment(new HomeFragment(), false);
         }
 
-        profile_button_main.setOnClickListener(v -> replaceFragment(new ProfileFragment()));
-        home_button_main.setOnClickListener(v -> replaceFragment(new HomeFragment()));
-        settings_button_main.setOnClickListener(v -> replaceFragment(new SettingsFragment()));
+        profile_button_main.setOnClickListener(v -> replaceFragment(new ProfileFragment(), true));
+        home_button_main.setOnClickListener(v -> replaceFragment(new HomeFragment(), false));
+        settings_button_main.setOnClickListener(v -> replaceFragment(new SettingsFragment(), true));
     }
 
     private void getAllId() {
@@ -39,11 +38,27 @@ public class MainActivity extends AppCompatActivity {
         profile_button_main = findViewById(R.id.buttonProfile);
     }
 
-    private void replaceFragment(Fragment fragment) {
+    private void replaceFragment(Fragment fragment, boolean swipeRight) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        // Устанавливаем анимации перехода для свайпа
+        if (swipeRight) {
+            // Свайп вправо для настроек и профиля
+            transaction.setCustomAnimations(
+                    R.anim.slide_in_right,  // Вход справа
+                    R.anim.slide_out_left   // Выход слева
+            );
+        } else {
+            // Свайп влево для главной страницы
+            transaction.setCustomAnimations(
+                    R.anim.slide_in_left,   // Вход слева
+                    R.anim.slide_out_right  // Выход вправо
+            );
+        }
+
         transaction.replace(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null);
+        transaction.addToBackStack(null);  // Добавляем в стек возврата
         transaction.commit();
     }
 }

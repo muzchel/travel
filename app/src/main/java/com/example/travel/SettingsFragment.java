@@ -26,6 +26,8 @@ public class SettingsFragment extends Fragment {
 
     private Switch switchNotifications;
 
+    private Button buttonLogout;
+
     public SettingsFragment() {
         // Пустой конструктор (обязательно для фрагментов)
     }
@@ -39,6 +41,12 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        buttonLogout = view.findViewById(R.id.buttonLogout);
+
+        // Обработчик кнопки "Выйти"
+        buttonLogout.setOnClickListener(v -> logout());
+
 
         // Кнопка "Оставить отзыв"
         Button buttonSendFeedback = view.findViewById(R.id.buttonSendFeedback);
@@ -64,6 +72,14 @@ public class SettingsFragment extends Fragment {
                 disableNotifications();
             }
         });
+    }
+
+    private void logout() {
+        // Очистить все данные о пользователе (например, удалить токены или очистить сессии)
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);  // Чтобы вернуться на экран входа и не было возможности вернуться в SettingsFragment
+        startActivity(intent);
+        getActivity().finish(); // Закрыть текущую Activity
     }
 
     private void enableNotifications() {

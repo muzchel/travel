@@ -1,6 +1,7 @@
 package com.example.travel;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -9,26 +10,38 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
+import android.widget.Toast;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import java.util.concurrent.TimeUnit;
+
+import com.bumptech.glide.Glide;
 import database.DatabaseHelper;
+
+import java.util.concurrent.TimeUnit;
 
 public class HomeFragment extends Fragment {
     private static final String CHANNEL_ID = "travel_notifications";
     private static final int PERMISSION_REQUEST_CODE = 101;
     private DatabaseHelper databaseHelper;
     private LinearLayout tourContainer;
+    private EditText searchField;
     private String userEmail;
+
+    private Button filtersButton;
+
     public HomeFragment() {
         super(R.layout.fragment_home);
     }
@@ -38,28 +51,82 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        // Инициализация компонента
+        tourContainer = view.findViewById(R.id.tourContainer);  // Убедитесь, что контейнер есть в макете
+        searchField = view.findViewById(R.id.editTextSearch);
+        filtersButton = view.findViewById(R.id.buttonFilters);// Поле для поиска
         databaseHelper = new DatabaseHelper(requireContext());
-        tourContainer = view.findViewById(R.id.tourcontainer1);
 
         createNotificationChannel();
         requestNotificationPermission();
         scheduleNotificationWorker();
-        loadToursFromDatabase();
 
-        TextView textViewTourName1 = view.findViewById(R.id.name_tour_1);
-        TextView textViewTourName2 = view.findViewById(R.id.name_tour_2);
-        TextView textViewTourName3 = view.findViewById(R.id.name_tour_3);
+        // Загружаем туры при запуске
+        loadToursFromDatabase(null);  // Загружаем все туры по умолчанию
 
-        if (textViewTourName1 != null) {
-            textViewTourName1.setOnClickListener(v -> openTourDetail("Грузия: Винные приключения", TourDetailActivity.class));
-        }
-        if (textViewTourName2 != null) {
-            textViewTourName2.setOnClickListener(v -> openTourDetail("Памуккале: Белоснежные террасы", Tour2DetailActivity.class));
-        }
-        if (textViewTourName3 != null) {
-            textViewTourName3.setOnClickListener(v -> openTourDetail("Величие пирамид и Сфинкса", Tour3DetailActivity.class));
-        }
+        filtersButton.setOnClickListener(v -> openFiltersDialog());
+
+
+        // Обработчик поиска
+        searchField.setOnEditorActionListener((v, actionId, event) -> {
+            String query = searchField.getText().toString();
+            loadToursFromDatabase(query);  // Фильтруем туры по запросу
+            return false;
+        });
+
+
         return view;
+    }
+
+    private void openFiltersDialog() {
+        // Создание диалогового окна для фильтров
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Выберите фильтры");
+
+        // Создание элементов для фильтрации
+        // Местоположение
+        final EditText locationInput = new EditText(requireContext());
+        locationInput.setHint("Местоположение");
+
+        // Цена
+        final EditText priceInput = new EditText(requireContext());
+        priceInput.setHint("Макс. цена");
+
+        // Добавляем поля в диалог
+        LinearLayout layout = new LinearLayout(requireContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 30, 50, 30);
+        layout.addView(locationInput);
+        layout.addView(priceInput);
+        builder.setView(layout);
+
+        // Кнопка подтверждения
+        builder.setPositiveButton("Применить", (dialog, which) -> {
+            // Получаем значения из полей
+            String location = locationInput.getText().toString();
+            String price = priceInput.getText().toString();
+
+            // Формируем запрос с фильтрами
+            String query = "";
+            if (!location.isEmpty()) {
+                query += "location LIKE '%" + location + "%'";
+            }
+            if (!price.isEmpty()) {
+                if (!query.isEmpty()) {
+                    query += " AND ";
+                }
+                query += "price <= " + price;
+            }
+
+            // Загружаем туры с фильтрами
+            loadToursFromDatabase(query);
+        });
+
+        // Кнопка отмены
+        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.dismiss());
+
+        // Показываем диалог
+        builder.create().show();
     }
 
     private void createNotificationChannel() {
@@ -91,43 +158,72 @@ public class HomeFragment extends Fragment {
         WorkManager.getInstance(requireContext()).enqueue(notificationWork);
     }
 
-    private void loadToursFromDatabase() {
+    // Загрузка туров из базы данных с фильтрацией по запросу
+    private void loadToursFromDatabase(String query) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id, name FROM tours", null);
+        String sqlQuery = "SELECT id, name, description, location, price, contact_info, images FROM tours";
+
+        // Если есть поисковый запрос, добавляем фильтрацию
+        if (query != null && !query.isEmpty()) {
+            sqlQuery += " WHERE " + query;
+        }
+
+        Cursor cursor = db.rawQuery(sqlQuery, null);
+
+        // Очищаем контейнер для туров перед добавлением новых
+        tourContainer.removeAllViews();
 
         while (cursor.moveToNext()) {
             int id = cursor.getInt(0);
-            String tourName = cursor.getString(1);
+            String name = cursor.getString(1);
+            String description = cursor.getString(2);
+            String location = cursor.getString(3);
+            double price = cursor.getDouble(4);
+            String contact = cursor.getString(5);
+            String imageUrl = cursor.getString(6);  // Изображение тура
 
-            TextView tourView = new TextView(requireContext());
-            tourView.setText(tourName);
-            tourView.setTextSize(18);
-            tourView.setPadding(10, 10, 10, 10);
-            tourView.setOnClickListener(v -> openTourDetail(tourName, getTourDetailActivity(id)));
+            // Создаем контейнер для тура
+            LinearLayout tourLayout = new LinearLayout(requireContext());
+            tourLayout.setOrientation(LinearLayout.HORIZONTAL);
+            tourLayout.setPadding(10, 10, 10, 10);
+            tourLayout.setBackgroundColor(getResources().getColor(R.color.hint));
 
-            tourContainer.addView(tourView);
+            // Загрузка изображения с помощью Glide
+            ImageView tourImage = new ImageView(requireContext());
+            tourImage.setLayoutParams(new LinearLayout.LayoutParams(150, 150));
+            Glide.with(requireContext()).load(imageUrl).into(tourImage);  // Загрузка изображения
+
+            // Добавляем название тура
+            TextView tourNameView = new TextView(requireContext());
+            tourNameView.setText(name);
+            tourNameView.setTextColor(getResources().getColor(R.color.orange));
+            tourNameView.setTextSize(18);
+            tourNameView.setGravity(Gravity.CENTER_VERTICAL);
+
+            // Обработка клика на название тура
+            tourNameView.setOnClickListener(v -> {
+                // Открываем фрагмент с подробной информацией о туре
+                Fragment fragment = TourDetailFragment.newInstance(name, description, location, price, contact);
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(
+                                R.anim.slide_in_right,  // Анимация входа (для нового фрагмента)
+                                R.anim.slide_out_left,  // Анимация выхода (для текущего фрагмента)
+                                R.anim.slide_in_left,  // Анимация входа при возврате (для предыдущего фрагмента)
+                                R.anim.slide_out_right)  // Анимация выхода при возврате (для предыдущего фрагмента)
+                        .replace(R.id.fragment_container, fragment)  // заменяем контейнер фрагментов
+                        .addToBackStack(null)  // добавляем в стек возврата
+                        .commit();
+            });
+
+            // Добавляем элементы в layout
+            tourLayout.addView(tourImage);
+            tourLayout.addView(tourNameView);
+
+            // Добавляем тур в основной контейнер
+            tourContainer.addView(tourLayout);
         }
+
         cursor.close();
         db.close();
     }
-
-    private Class<?> getTourDetailActivity(int tourId) {
-        switch (tourId) {
-            case 1:
-                return TourDetailActivity.class;
-            case 2:
-                return Tour2DetailActivity.class;
-            case 3:
-                return Tour3DetailActivity.class;
-            default:
-                return TourDetailActivity.class;
-        }
-    }
-
-    private void openTourDetail(String tourName, Class<?> activityClass) {
-        Intent intent = new Intent(requireContext(), activityClass);
-        intent.putExtra("TOUR_NAME", tourName);
-        startActivity(intent);
-    }
-
 }

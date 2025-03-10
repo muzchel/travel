@@ -1,0 +1,34 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#333333"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Поле для ввода местоположения -->
+    <EditText
+        android:id="@+id/editTextLocationFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Местоположение"
+        android:inputType="text"
+        android:textColor="@color/white" />
+
+    <!-- Поле для ввода минимальной цены -->
+    <EditText
+        android:id="@+id/editTextMinPriceFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Минимальная цена"
+        android:inputType="numberDecimal"
+        android:textColor="@color/white" />
+
+    <!-- Поле для ввода максимальной цены -->
+    <EditText
+        android:id="@+id/editTextMaxPriceFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Максимальная цена"
+        android:inputType="numberDecimal"
+        android:textColor="@color/white" />
+</LinearLayout>

@@ -41,6 +41,13 @@
         android:textColorHint="@color/orange"
         android:inputType="textPassword"
         android:layout_marginTop="10dp"/>
+    <CheckBox
+        android:id="@+id/AdminLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Вход для администратора"
+        android:textColor="@color/orange"/>
+
 
     <Button
         android:id="@+id/buttonLogin"
