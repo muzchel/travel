@@ -13,4 +13,6 @@
     <string name="tour_3">Величие пирамид и Сфинкса</string>
     <string name="tour_2">Памуккале: Белоснежные террасы</string>
     <string name="tour_1">Грузия: Винные приключения</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

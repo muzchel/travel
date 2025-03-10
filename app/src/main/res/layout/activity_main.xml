@@ -1,220 +1,58 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#333333">
 
-    <FrameLayout
-        android:id="@+id/contentFrame"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:name="com.example.travel.HomeFragment"
         android:layout_width="match_parent"
-        android:layout_height="682dp"
-        android:layout_above="@+id/navigationMenu"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
-        android:gravity="center_vertical|center_horizontal" />
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toTopOf="@+id/navigationMenu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <LinearLayout
+        android:id="@+id/navigationMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:background="#444444"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ImageButton
+            android:id="@+id/buttonProfile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Профиль"
+            app:srcCompat="@drawable/fi_rr_user" />
 
-            <EditText
-                android:id="@+id/editTextSearch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Поиск по турам"
-                android:background="@android:color/white"
-                android:padding="12dp"
-            android:minHeight="48dp"
-            android:minWidth="48dp" />
-
-            <Button
-                android:id="@+id/buttonSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Поиск"
-                android:layout_marginStart="8dp"
-                android:backgroundTint="@color/orange"/>
-        </LinearLayout>
-
-
-        <TextView
-            android:id="@+id/textViewHotTours"
-            android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/buttonHome"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Горящие туры!"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/orange"
-            android:layout_gravity="center"
-            android:layout_marginBottom="16dp" />
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Главная"
+            android:src="@drawable/fi_rr_home" />
 
-        <LinearLayout
-            android:id="@+id/tourcontainer1"
-            android:layout_width="match_parent"
+        <ImageButton
+            android:id="@+id/buttonSettings"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:background="@color/hint"
-            android:layout_marginBottom="16dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/imageViewFlag"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-
-                android:src="@drawable/georgia"
-            android:contentDescription="Флаг" />
-
-            <TextView
-                android:id="@+id/name_tour_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="0dp"
-                android:gravity="center"
-                android:textColor="@color/orange"
-                android:text="Грузия: Винные приключения"
-                android:textSize="22sp"
-                android:clickable="true"
-                android:focusable="true"/>
-        </LinearLayout>
-
-
-
-        <TextView
-            android:id="@+id/textViewTours"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Туры"
-            android:textSize="24sp"
-            android:textColor="@color/orange"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_marginBottom="8dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:background="@color/hint"
-            android:layout_marginBottom="8dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/imageViewFlag1"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/turkey"
-            android:contentDescription="Флаг Памуккале" />
-
-            <TextView
-                android:id="@+id/name_tour_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:text="Памуккале: Белоснежные террасы"
-                android:textSize="22sp"
-                android:textColor="@color/orange"
-                android:layout_centerHorizontal="true"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:background="@color/hint"
-            android:layout_marginBottom="8dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/imageViewFlag2"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/egypt"
-                android:contentDescription="Флаг пирамид" />
-
-            <TextView
-                android:id="@+id/name_tour_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:textColor="@color/orange"
-                android:text="Величие пирамид и Сфинкса"
-                android:layout_centerHorizontal="true"
-                android:textSize="22sp"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true"/>
-        </LinearLayout>
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Настройки"
+            android:src="@drawable/fi_rs_settings" />
 
     </LinearLayout>
-<androidx.constraintlayout.widget.ConstraintLayout
-android:id="@+id/navigationMenu"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_alignParentBottom="true"
-android:background="#444444"
-tools:ignore="ExtraText">
-
-<ImageButton
-    android:id="@+id/buttonProfile"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
-    android:contentDescription="Профиль"
-    android:src="@drawable/fi_rr_user"
-    app:layout_constraintEnd_toStartOf="@id/buttonHome"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintWidth_percent="0.33" />
-
-<ImageButton
-    android:id="@+id/buttonHome"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
-    android:src="@drawable/fi_rr_home"
-    android:contentDescription="Главная"
-    app:layout_constraintStart_toEndOf="@id/buttonProfile"
-    app:layout_constraintEnd_toStartOf="@id/buttonSettings"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintWidth_percent="0.33" />
-
-<ImageButton
-    android:id="@+id/buttonSettings"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
-    android:src="@drawable/fi_rs_settings"
-    android:contentDescription="Настройки"
-    app:layout_constraintStart_toEndOf="@id/buttonHome"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintWidth_percent="0.33" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </RelativeLayout>

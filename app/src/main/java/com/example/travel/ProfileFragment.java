@@ -1,67 +1,56 @@
 package com.example.travel;
 
-import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import database.DatabaseHelper;
 import database.User;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileFragment extends Fragment {
 
     private TextView textViewName, textViewLastName, textViewUsername, textViewEmail;
     private DatabaseHelper databaseHelper;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.profile_activity); // Загружаем layout
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_profile, container, false); // Используем XML из Activity
 
-        // Инициализируем кнопки
-        ImageButton buttonHome = findViewById(R.id.buttonHome);
-        ImageButton buttonSettings = findViewById(R.id.buttonSettings);
+        // Инициализация UI
+        textViewName = view.findViewById(R.id.textViewName);
+        textViewLastName = view.findViewById(R.id.textViewLastName);
+        textViewUsername = view.findViewById(R.id.textViewUsername);
+        textViewEmail = view.findViewById(R.id.textViewEmail);
 
-        // Инициализируем текстовые поля
-        textViewName = findViewById(R.id.textViewName);
-        textViewLastName = findViewById(R.id.textViewLastName);
-        textViewUsername = findViewById(R.id.textViewUsername);
-        textViewEmail = findViewById(R.id.textViewEmail);
 
-        databaseHelper = new DatabaseHelper(this);
+        databaseHelper = new DatabaseHelper(requireContext());
 
-        // 1️⃣ Загружаем данные из SharedPreferences
-        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        // Загружаем данные пользователя
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String firstName = sharedPreferences.getString("firstName", "Неизвестно");
         String lastName = sharedPreferences.getString("lastName", "Неизвестно");
         String username = sharedPreferences.getString("username", "Неизвестно");
         String email = sharedPreferences.getString("email", null);
 
-        // Устанавливаем сохраненные данные
         textViewName.setText("Имя: " + firstName);
         textViewLastName.setText("Фамилия: " + lastName);
         textViewUsername.setText("Логин: " + username);
         textViewEmail.setText("Email: " + (email != null ? email : "Неизвестно"));
 
-        // 2️⃣ Если email есть, загружаем актуальные данные из БД
         if (email != null) {
             loadUserData(email);
         }
 
         // Переход в настройки
-        buttonSettings.setOnClickListener(v -> {
-            Intent intent = new Intent(ProfileActivity.this, SettingsActivity.class);
-            startActivity(intent);
-        });
-
-        // Переход на главную страницу
-        buttonHome.setOnClickListener(v -> {
-            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        });
+        return view;
     }
 
     private void loadUserData(String email) {
@@ -72,8 +61,7 @@ public class ProfileActivity extends AppCompatActivity {
             textViewUsername.setText("Логин: " + user.getUsername());
             textViewEmail.setText("Email: " + user.getEmail());
 
-            // Обновляем SharedPreferences с актуальными данными из БД
-            SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("firstName", user.getFirstName());
             editor.putString("lastName", user.getLastName());
@@ -81,5 +69,12 @@ public class ProfileActivity extends AppCompatActivity {
             editor.putString("email", user.getEmail());
             editor.apply();
         }
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

@@ -4,51 +4,51 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Switch;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import java.util.concurrent.TimeUnit;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsFragment extends Fragment {
 
     private static final String PREFS_NAME = "AppPrefs";
     private static final String NOTIFICATIONS_ENABLED = "notifications_enabled";
-    private static final String DEVELOPER_EMAIL = "sokolnik2281441@gmail.com"; // Замени на свою почту
+    private static final String DEVELOPER_EMAIL = "sokolnik2281441@gmail.com";
+
     private Switch switchNotifications;
 
+    public SettingsFragment() {
+        // Пустой конструктор (обязательно для фрагментов)
+    }
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings_activity);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_settings, container, false);
+    }
 
-        // Кнопка "Профиль"
-        ImageButton buttonProfile = findViewById(R.id.buttonProfile);
-        buttonProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, ProfileActivity.class);
-            startActivity(intent);
-        });
-
-        // Кнопка "Дом"
-        ImageButton buttonHome = findViewById(R.id.buttonHome);
-        buttonHome.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        });
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // Кнопка "Оставить отзыв"
-        Button buttonSendFeedback = findViewById(R.id.buttonSendFeedback);
+        Button buttonSendFeedback = view.findViewById(R.id.buttonSendFeedback);
         buttonSendFeedback.setOnClickListener(v -> sendFeedbackViaGmail());
 
         // Инициализация Switch для уведомлений
-        switchNotifications = findViewById(R.id.switchNotifications);
+        switchNotifications = view.findViewById(R.id.switchNotifications);
 
         // Загружаем состояние переключателя из SharedPreferences
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, getActivity().MODE_PRIVATE);
         boolean isEnabled = prefs.getBoolean(NOTIFICATIONS_ENABLED, true);
         switchNotifications.setChecked(isEnabled);
 
@@ -71,12 +71,12 @@ public class SettingsActivity extends AppCompatActivity {
                 new PeriodicWorkRequest.Builder(NotificationWorker.class, 2, TimeUnit.HOURS)
                         .build();
 
-        WorkManager.getInstance(this)
+        WorkManager.getInstance(requireContext())
                 .enqueueUniquePeriodicWork("notificationWork", ExistingPeriodicWorkPolicy.REPLACE, notificationWork);
     }
 
     private void disableNotifications() {
-        WorkManager.getInstance(this).cancelUniqueWork("notificationWork");
+        WorkManager.getInstance(requireContext()).cancelUniqueWork("notificationWork");
     }
 
     private void sendFeedbackViaGmail() {
