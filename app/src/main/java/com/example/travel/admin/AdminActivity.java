@@ -27,10 +27,10 @@ public class AdminActivity extends AppCompatActivity {
    });
 
         // Обработчик кнопки "Пользователи"
-       // buttonUsers.setOnClickListener(v -> {
-         //   Intent intent = new Intent(AdminActivity.this, UsersActivity.class);
-           // startActivity(intent);
-        //});
+       buttonUsers.setOnClickListener(v -> {
+          Intent intent = new Intent(AdminActivity.this, UsersActivity.class);
+            startActivity(intent);
+     });
 
         // Обработчик кнопки "Выход"
         buttonLogout.setOnClickListener(v -> {

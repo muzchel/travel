@@ -68,6 +68,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Здесь можно добавить другие изменения для будущих версий базы данных
     }
 
+    public Cursor getAllUsers() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM users", null);
+    }
+
+    public boolean deleteUser(String username) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete("users", "username=?", new String[]{username});
+        return result > 0;
+    }
+
     // Метод хеширования пароля (SHA-256)
     private String hashPassword(String password) {
         try {
