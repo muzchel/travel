@@ -70,7 +70,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getAllUsers() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM users", null);
+        return db.rawQuery("SELECT first_name, last_name, username, email FROM users", null);
     }
 
     public boolean deleteUser(String username) {

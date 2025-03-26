@@ -9,11 +9,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.travel.R;
-
 import java.util.ArrayList;
-
 import Adapter.UserAdapter;
 import database.DatabaseHelper;
 import database.User;
@@ -33,7 +30,7 @@ public class UsersActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         databaseHelper = new DatabaseHelper(this);
-        userList = getUsersFromDatabase();
+        loadUsers();
 
         userAdapter = new UserAdapter(userList, new UserAdapter.OnUserDeleteListener() {
             @Override
@@ -44,34 +41,41 @@ public class UsersActivity extends AppCompatActivity {
         recyclerView.setAdapter(userAdapter);
     }
 
-    // Получение пользователей из базы данных
-    private ArrayList<User> getUsersFromDatabase() {
-        ArrayList<User> users = new ArrayList<>();
+    // Загружаем пользователей из базы данных
+    private void loadUsers() {
+        userList = new ArrayList<>();
         Cursor cursor = databaseHelper.getAllUsers();
+
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                String firstName = cursor.getString(0);
-                String lastName = cursor.getString(1);
-                String username = cursor.getString(2);
-                String email = cursor.getString(3);
-                users.add(new User(firstName, lastName, username, email));
+                int firstNameIndex = cursor.getColumnIndex("first_name");
+                int lastNameIndex = cursor.getColumnIndex("last_name");
+                int usernameIndex = cursor.getColumnIndex("username");
+                int emailIndex = cursor.getColumnIndex("email");
+
+                if (firstNameIndex >= 0 && lastNameIndex >= 0 && usernameIndex >= 0 && emailIndex >= 0) {
+                    String firstName = cursor.getString(firstNameIndex);
+                    String lastName = cursor.getString(lastNameIndex);
+                    String username = cursor.getString(usernameIndex);
+                    String email = cursor.getString(emailIndex);
+
+                    userList.add(new User(firstName, lastName, username, email));
+                }
             }
             cursor.close();
         }
-        return users;
     }
 
     // Подтверждение удаления пользователя
     private void confirmDeleteUser(final String username) {
         new AlertDialog.Builder(this)
                 .setTitle("Удаление пользователя")
-                .setMessage("Вы уверены, что хотите удалить этого пользователя?")
+                .setMessage("Вы уверены, что хотите удалить пользователя: " + username + "?")
                 .setPositiveButton("Да", (dialog, which) -> {
-                    // Удаление пользователя из базы данных и обновление списка
                     boolean deleted = databaseHelper.deleteUser(username);
                     if (deleted) {
                         Toast.makeText(this, "Пользователь удален", Toast.LENGTH_SHORT).show();
-                        updateUserList(); // Обновление списка пользователей
+                        updateUserList();
                     } else {
                         Toast.makeText(this, "Ошибка удаления", Toast.LENGTH_SHORT).show();
                     }
@@ -80,10 +84,10 @@ public class UsersActivity extends AppCompatActivity {
                 .show();
     }
 
-    // Обновление списка пользователей после удаления
+    // Обновление списка после удаления
     private void updateUserList() {
         userList.clear();
-        userList.addAll(getUsersFromDatabase());  // Получаем актуальный список пользователей из базы данных
-        userAdapter.notifyDataSetChanged();  // Уведомляем адаптер, что данные изменились
+        loadUsers();
+        userAdapter.notifyDataSetChanged();
     }
 }
